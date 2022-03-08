@@ -8,22 +8,61 @@
 import UIKit
 
 class WelcomeViewController: UIViewController {
-
+    
+    private let signInButton : UIButton = {
+        let button = UIButton()
+        button.backgroundColor = .white
+        button.setTitle("Sign In With Spotify", for: .normal)
+        button.setTitleColor(.blue, for: .normal)
+        return button
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        
+        title = "Spotify"
+        view.backgroundColor = .systemGreen
+        view.addSubview(signInButton)
+        signInButton.addTarget(self, action: #selector(didTapSignIn), for: .touchUpInside)
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        signInButton.frame = CGRect(
+            x: 20,
+            y: view.height-50-view.safeAreaInsets.bottom,
+            width: view.width-40,
+            height: 50
+        )
+        
     }
-    */
-
+    
+    @objc func didTapSignIn() {
+        let vc = AuthViewController()
+        //hanldling signin restult
+        vc.completionHandler = { [weak self] success in
+            DispatchQueue.main.async {
+                self?.handleSignIn(success : success)
+            }
+            
+        }
+        vc.navigationItem.largeTitleDisplayMode = .never
+        navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    private func handleSignIn(success : Bool) {
+        //log user in or not at them for error
+        guard success else {
+            //create a alert box when it pop some error.
+            let alert = UIAlertController(title: "Oops", message: "Something went wrong when sign in.", preferredStyle: .alert)
+            //created alert box action to cancel
+            alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: nil))
+            present(alert, animated: true)
+            return
+        }
+        //once the user signin it will go to the tabbarview controller page.
+        let mainAppTabBarVC = TabBarViewController()
+        mainAppTabBarVC.modalPresentationStyle = .fullScreen
+        present(mainAppTabBarVC, animated: true)
+    }
 }

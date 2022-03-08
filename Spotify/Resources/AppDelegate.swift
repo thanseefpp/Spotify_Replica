@@ -16,9 +16,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         //creating a window that can load without storyboard.
         let window = UIWindow(frame: UIScreen.main.bounds)
-        window.rootViewController = TabBarViewController()
+        //if user authenticated then go to tabbarview else go to welcome screen.
+        if AuthManger.shared.isSignedIn {
+            window.rootViewController = TabBarViewController()
+        }else {
+            let navVC = UINavigationController(rootViewController: WelcomeViewController())
+            navVC.navigationBar.prefersLargeTitles = true
+            navVC.viewControllers.first?.navigationItem.largeTitleDisplayMode = .always
+            window.rootViewController = navVC
+        }
+        
+//        print(AuthManger.shared.signInURL!)
+        
         window.makeKeyAndVisible()
         self.window = window
+        
+        AuthManger.shared.refreshIfNeeded { success in
+            print(success)
+        }
+        
         return true
     }
 

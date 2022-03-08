@@ -15,7 +15,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         //creating a window that can load without storyboard.
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
-        window.rootViewController = TabBarViewController()
+        //if user authenticated then go to tabbarview else go to welcome screen.
+        if AuthManger.shared.isSignedIn {
+            window.rootViewController = TabBarViewController()
+        }else {
+            let navVC = UINavigationController(rootViewController: WelcomeViewController())
+            navVC.navigationBar.prefersLargeTitles = true
+            navVC.viewControllers.first?.navigationItem.largeTitleDisplayMode = .always
+            window.rootViewController = navVC
+        }
         window.makeKeyAndVisible()
         self.window = window
     }
